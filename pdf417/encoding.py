@@ -2,10 +2,10 @@ from __future__ import division
 
 import math
 
-from pdf417gen.codes import map_code_word
-from pdf417gen.compaction import compact
-from pdf417gen.error_correction import compute_error_correction_code_words
-from pdf417gen.util import chunks, to_bytes
+from pdf417.codes import map_code_word
+from pdf417.compaction import compact
+from pdf417.error_correction import compute_error_correction_code_words
+from pdf417.util import chunks, to_bytes
 
 START_CHARACTER = 0x1fea8
 STOP_CHARACTER = 0x3fa29
@@ -23,12 +23,20 @@ MAX_ROWS = 90
 DEFAULT_ENCODING = 'utf-8'
 
 
-def encode(data, columns=6, security_level=2, encoding=DEFAULT_ENCODING, numeric_compaction=False):
+def encode(data, columns=6, security_level=2,
+           encoding=DEFAULT_ENCODING, numeric_compaction=False):
     if columns < 1 or columns > 30:
-        raise ValueError("'columns' must be between 1 and 30. Given: %r" % columns)
+        raise ValueError(
+            "'columns' must be between 1 and 30. Given: %r" % columns
+        )
 
     if security_level < 0 or security_level > 8:
-        raise ValueError("'security_level' must be between 1 and 8. Given: %r" % security_level)
+        raise ValueError(
+            (
+                "'security_level' must be "
+                "between 1 and 8. Given: %r"
+            ) % security_level
+        )
 
     num_cols = columns  # Nomenclature
 
@@ -36,7 +44,8 @@ def encode(data, columns=6, security_level=2, encoding=DEFAULT_ENCODING, numeric
     data_bytes = to_bytes(data, encoding)
 
     # Convert data to code words and split into rows
-    code_words = encode_high(data_bytes, num_cols, security_level, numeric_compaction)
+    code_words = encode_high(data_bytes, num_cols, security_level,
+                             numeric_compaction)
     rows = list(chunks(code_words, num_cols))
 
     return list(encode_rows(rows, num_cols, security_level))
@@ -60,7 +69,8 @@ def encode_row(row_no, row_words, left, right):
     right_low = map_code_word(table_idx, right)
     row_words_low = [map_code_word(table_idx, word) for word in row_words]
 
-    return [START_CHARACTER, left_low] + row_words_low + [right_low, STOP_CHARACTER]
+    return [START_CHARACTER, left_low] + row_words_low + [right_low,
+                                                          STOP_CHARACTER]
 
 
 def encode_high(data, columns, security_level, numeric_compaction=False):
@@ -89,7 +99,8 @@ def encode_high(data, columns, security_level, numeric_compaction=False):
     extendend_words = [length] + data_words + padding_words
 
     # Calculate error correction words
-    ec_words = compute_error_correction_code_words(extendend_words, security_level)
+    ec_words = compute_error_correction_code_words(extendend_words,
+                                                   security_level)
 
     return extendend_words + ec_words
 
@@ -99,18 +110,21 @@ def validate_barcode_size(data_count, ec_count, padding_count, columns):
     if cw_count > MAX_CODE_WORDS:
         raise ValueError(
             "Data too long. Generated bar code contains %d code words. "
-            "Maximum is %d. Try decreasing security level." % (cw_count, MAX_CODE_WORDS))
+            "Maximum is %d. Try decreasing security level." % (
+                cw_count, MAX_CODE_WORDS))
 
     row_count = math.ceil(cw_count / columns)
     if row_count < MIN_ROWS:
         raise ValueError(
             "Data too short. Generated bar code has %d rows. "
-            "Minimum is %d rows. Try decreasing column count." % (row_count, MIN_ROWS))
+            "Minimum is %d rows. Try decreasing column count." % (
+                row_count, MIN_ROWS))
 
     if row_count > MAX_ROWS:
         raise ValueError(
             "Data too long. Generated bar code has %d rows. "
-            "Maximum is %d rows. Try increasing column count. " % (row_count, MAX_ROWS))
+            "Maximum is %d rows. Try increasing column count. " % (
+                row_count, MAX_ROWS))
 
 
 def get_left_code_word(row_no, num_rows, num_cols, security_level):

@@ -1,7 +1,7 @@
 from itertools import chain
 
-from .data import CHARACTERS_LOOKUP, SWITCH_CODES, Submode
-from .util import switch_base, to_base, chunks
+from pdf417.data import CHARACTERS_LOOKUP, SWITCH_CODES, Submode
+from pdf417.util import switch_base, to_base, chunks
 
 
 # -- Number compaction mode ----------------------------------------------------
@@ -12,6 +12,7 @@ def compact_numbers(data):
     Can encode: Digits 0-9, ASCII
     Rate compaction: 2.9 bytes per code word
     """
+
     def compact_chunk(chunk):
         number = "".join([chr(x) for x in chunk])
         value = int("1" + number)
@@ -25,7 +26,6 @@ def compact_numbers(data):
 # -- Text compaction mode ------------------------------------------------------
 
 def compact_text_interim(data):
-
     def exists_in_submode(char, submode):
         return char in CHARACTERS_LOOKUP and \
                submode in CHARACTERS_LOOKUP[char]
@@ -36,7 +36,8 @@ def compact_text_interim(data):
 
         submodes = CHARACTERS_LOOKUP[char].keys()
 
-        preference = [Submode.LOWER, Submode.UPPER, Submode.MIXED, Submode.PUNCT]
+        preference = [Submode.LOWER, Submode.UPPER, Submode.MIXED,
+                      Submode.PUNCT]
 
         for submode in preference:
             if submode in submodes:
@@ -74,6 +75,7 @@ def compact_text(data):
     # Since each code word consists of 2 characters, a padding value is
     # needed when encoding a single character. 29 is used as padding because
     # it's a switch in all 4 submodes, and doesn't add any data.
+
     PADDING_INTERIM_CODE = 29
 
     def compact_chunk(chunk):
@@ -103,7 +105,8 @@ def compact_bytes(data):
     def compact_full_chunk(chunk):
         """Encodes a chunk consisting of exactly 6 bytes.
 
-        The chunk is encoded to 5 code words by changing the base from 256 to 900.
+        The chunk is encoded to 5 code words by changing
+        the base from 256 to 900.
         """
 
         digits = [i for i in chunk]
@@ -127,7 +130,8 @@ def compact(data, numeric_compaction=False):
     """Encodes given data into an array of PDF417 code words."""
 
     def compact_chunks(chunks):
-        compacted_chunks = [compact_chunk(ordinal, *args) for ordinal, args in enumerate(chunks)]
+        compacted_chunks = [compact_chunk(ordinal, *args) for ordinal, args in
+                            enumerate(chunks)]
 
         return chain(*compacted_chunks)
 
@@ -144,15 +148,18 @@ def compact(data, numeric_compaction=False):
         return code_words
 
     def split_to_chunks(data):
-        """Splits a string into chunks which can be encoded with the same encoder.
+        """Splits a string into chunks which can be encoded with the
+        same encoder.
 
-        Implemented as a generator which yields chunks and the appropriate encoder.
+        Implemented as a generator which yields chunks and
+        the appropriate encoder.
 
         TODO: Currently always switches to the best encoder, even if it's just
         for one character, consider a better algorithm.
         """
 
-        # Default compaction mode is Text (does not require an initial switch code)
+        # Default compaction mode is Text
+        # (does not require an initial switch code)
         function = compact_text
         chunk = []
 
@@ -191,7 +198,6 @@ def compact(data, numeric_compaction=False):
 
         if prev_chunk:
             yield prev_chunk, prev_fn
-
 
     chunks = split_to_chunks(data)
     if numeric_compaction:

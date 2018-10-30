@@ -2,19 +2,22 @@
 PDF417 barcode generator for Python
 ===================================
 
-.. image:: https://img.shields.io/travis/ihabunek/pdf417-py.svg?maxAge=3600&style=flat-square
-   :target: https://travis-ci.org/ihabunek/pdf417-py
-.. image:: https://img.shields.io/badge/author-%40ihabunek-blue.svg?maxAge=3600&style=flat-square
-   :target: https://twitter.com/ihabunek
-.. image:: https://img.shields.io/github/license/ihabunek/pdf417-py.svg?maxAge=3600&style=flat-square
+.. image:: https://img.shields.io/travis/mosquito/pdf417.svg?maxAge=3600&style=flat-square
+   :target: https://travis-ci.org/mosquito/pdf417
+
+.. image:: https://img.shields.io/badge/author-%40mosquito-blue.svg?maxAge=3600&style=flat-square
+   :target: https://twitter.com/mosquito
+
+.. image:: https://img.shields.io/github/license/mosquito/pdf417.svg?maxAge=3600&style=flat-square
    :target: https://opensource.org/licenses/MIT
-.. image:: https://img.shields.io/pypi/v/pdf417gen.svg?maxAge=3600&style=flat-square
-   :target: https://pypi.python.org/pypi/pdf417gen
+
+.. image:: https://img.shields.io/pypi/v/pdf417.svg?maxAge=3600&style=flat-square
+   :target: https://pypi.python.org/pypi/pdf417
 
 
 Easily encode your data into a 2D barcode using the PDF417 format.
 
-.. image:: https://raw.githubusercontent.com/ihabunek/pdf417-py/master/images/1_basic.jpg
+.. image:: https://raw.githubusercontent.com/mosquito/pdf417/master/images/1_basic.jpg
 
 Licensed under the MIT License, see `LICENSE <LICENSE>`_.
 
@@ -25,7 +28,7 @@ Install using pip:
 
 .. code-block::
 
-    pip install pdf417gen
+    pip install pdf417
 
 
 CLI
@@ -65,7 +68,7 @@ Usage overview:
 
 .. code-block:: python
 
-    from pdf417gen import encode, render_image, render_svg
+    from pdf417 import encode, render_image, render_svg
 
     # Some data to encode
     text = """Beautiful is better than ugly.
@@ -121,7 +124,7 @@ of columns to decrease the rows count.
     image = render_image(codes)
     image.show()
 
-.. image:: https://raw.githubusercontent.com/ihabunek/pdf417-py/master/images/2_columns.jpg
+.. image:: https://raw.githubusercontent.com/mosquito/pdf417/master/images/2_columns.jpg
 
 Security level
 ~~~~~~~~~~~~~~
@@ -138,10 +141,10 @@ produces 512. The default security level is 2.
     image = render_image(codes)
     image.show()
 
-.. image:: https://raw.githubusercontent.com/ihabunek/pdf417-py/master/images/3_security_level.jpg
+.. image:: https://raw.githubusercontent.com/mosquito/pdf417/master/images/3_security_level.jpg
 
 Auto Numeric Compaction Mode
----------------------------
+----------------------------
 
 This mode can pack almost 3 digits (2.93) info a symbol character.
 The words with length less 13 symbols will be invoked as Text
@@ -177,7 +180,7 @@ Colors can be specified as hex codes or using HTML color names.
     image = render_image(codes, scale=5, ratio=2, padding=5, fg_color="Indigo", bg_color="#ddd")
     image.show()
 
-.. image:: https://raw.githubusercontent.com/ihabunek/pdf417-py/master/images/4_rendering.jpg
+.. image:: https://raw.githubusercontent.com/mosquito/pdf417/master/images/4_rendering.jpg
 
 Render SVG
 ----------
@@ -200,7 +203,8 @@ The background is left transparent.
     svg = render_svg(codes, scale=5, ratio=2, color="Seaweed")
     svg.write('barcode.svg')
 
-## See also
+See also
+~~~~~~~~
 
 * pdf417-php_ - a PHP implementation
 * golang-pdf417_ - a Go implementation

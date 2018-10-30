@@ -1,5 +1,11 @@
-from PIL import Image, ImageColor, ImageOps
 from xml.etree.ElementTree import ElementTree, Element, SubElement
+
+try:
+    from PIL import Image, ImageColor, ImageOps
+except ImportError:
+    Image = None
+    ImageColor = None
+    ImageOps = None
 
 
 def barcode_size(codes):
@@ -29,6 +35,7 @@ def modules(codes):
 
 
 def parse_color(color):
+    assert ImageColor, "Module PIL is not installed"
     return ImageColor.getrgb(color)
 
 
@@ -36,7 +43,11 @@ def rgb_to_hex(color):
     return '#{0:02x}{1:02x}{2:02x}'.format(*color)
 
 
-def render_image(codes, scale=3, ratio=3, padding=20, fg_color="#000", bg_color="#FFF"):
+def render_image(codes, scale=3, ratio=3, padding=20, fg_color="#000",
+                 bg_color="#FFF"):
+
+    assert Image and ImageOps, "Module PIL is not installed"
+
     width, height = barcode_size(codes)
 
     # Translate hex code colors to RGB tuples

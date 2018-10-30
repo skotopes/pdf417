@@ -1,6 +1,5 @@
 from builtins import range
-
-from .data import ERROR_CORRECTION_FACTORS
+from pdf417.data import ERROR_CORRECTION_FACTORS
 
 
 def compute_error_correction_code_words(data_words, level):

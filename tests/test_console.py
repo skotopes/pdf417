@@ -2,35 +2,27 @@ import pytest
 
 from mock import patch
 
-from pdf417gen import console
+from pdf417 import console
 
 
-def test_print_usage(capsys):
-    console.print_usage()
-    out, err = capsys.readouterr()
-    assert "Usage: pdf417gen [command]" in out
-    assert not err
+@pytest.fixture
+def arguments():
+    return console.parser.parse_args(['encode'])
 
 
-def test_print_err(capsys):
-    console.print_err("foo")
-    out, err = capsys.readouterr()
-    assert not out
-    assert "foo" in err
+@patch('pdf417.console.encode', return_value="RETVAL")
+@patch('pdf417.console.render_image')
+def test_encode(render_image, encode, capsys, arguments):
+    arguments.text = "foo"
 
-
-@patch('pdf417gen.console.encode', return_value="RETVAL")
-@patch('pdf417gen.console.render_image')
-def test_encode(render_image, encode, capsys):
-    text = "foo"
-
-    console.do_encode([text])
+    console.encode_data(arguments)
 
     encode.assert_called_once_with(
-        text,
+        arguments.text,
         columns=6,
         encoding='utf-8',
-        security_level=2
+        security_level=2,
+        numeric_compaction=False,
     )
 
     render_image.assert_called_once_with(
@@ -41,38 +33,3 @@ def test_encode(render_image, encode, capsys):
         ratio=3,
         scale=3
     )
-
-
-@patch('sys.stdin.read', return_value="")
-@patch('pdf417gen.console.encode', return_value="RETVAL")
-@patch('pdf417gen.console.render_image')
-def test_encode_no_input(render_image, encode, read, capsys):
-    console.do_encode([])
-
-    encode.assert_not_called()
-    render_image.assert_not_called()
-    read.assert_called_once_with()
-
-    out, err = capsys.readouterr()
-    assert not out
-    assert "No input given" in err
-
-
-@patch('pdf417gen.console.encode', return_value="RETVAL")
-@patch('pdf417gen.console.render_image')
-def test_encode_exception(render_image, encode, capsys):
-    encode.side_effect = ValueError("FAILED")
-
-    console.do_encode(["foo"])
-
-    encode.assert_called_once_with(
-        "foo",
-        columns=6,
-        encoding='utf-8',
-        security_level=2
-    )
-    render_image.assert_not_called()
-
-    out, err = capsys.readouterr()
-    assert not out
-    assert "FAILED" in err

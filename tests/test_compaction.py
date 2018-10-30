@@ -1,7 +1,7 @@
 import pytest
 
-from pdf417gen.encoding import to_bytes
-from pdf417gen.compaction import (
+from pdf417.encoding import to_bytes
+from pdf417.compaction import (
     compact, compact_bytes, compact_numbers, compact_text, compact_text_interim)
 
 
