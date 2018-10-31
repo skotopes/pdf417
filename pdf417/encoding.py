@@ -44,8 +44,10 @@ def encode(data, columns=6, security_level=2,
     data_bytes = to_bytes(data, encoding)
 
     # Convert data to code words and split into rows
-    code_words = encode_high(data_bytes, num_cols, security_level,
-                             numeric_compaction)
+    code_words = encode_high(
+        data_bytes, num_cols, security_level, numeric_compaction
+    )
+
     rows = list(chunks(code_words, num_cols))
 
     return list(encode_rows(rows, num_cols, security_level))
@@ -81,7 +83,7 @@ def encode_high(data, columns, security_level, numeric_compaction=False):
     """
 
     # Encode data to code words
-    data_words = list(compact(data))
+    data_words = list(compact(data, numeric_compaction=numeric_compaction))
     data_count = len(data_words)
 
     # Get the padding to align data to column count
