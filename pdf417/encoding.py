@@ -24,7 +24,7 @@ DEFAULT_ENCODING = 'utf-8'
 
 
 def encode(data, columns=6, security_level=2,
-           encoding=DEFAULT_ENCODING, numeric_compaction=False):
+           encoding=DEFAULT_ENCODING, numeric_compaction=True):
     if columns < 1 or columns > 30:
         raise ValueError(
             "'columns' must be between 1 and 30. Given: %r" % columns
@@ -75,7 +75,7 @@ def encode_row(row_no, row_words, left, right):
                                                           STOP_CHARACTER]
 
 
-def encode_high(data, columns, security_level, numeric_compaction=False):
+def encode_high(data, columns, security_level, numeric_compaction=True):
     """Converts the input string to high level code words.
 
     Including the length indicator and the error correction words, but without
@@ -83,7 +83,7 @@ def encode_high(data, columns, security_level, numeric_compaction=False):
     """
 
     # Encode data to code words
-    data_words = list(compact(data, numeric_compaction=numeric_compaction))
+    data_words = list(compact(data, numeric_compaction))
     data_count = len(data_words)
 
     # Get the padding to align data to column count
