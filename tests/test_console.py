@@ -23,6 +23,7 @@ def test_encode(render_image, encode, capsys, arguments):
         encoding='utf-8',
         security_level=2,
         numeric_compaction=False,
+        truncate=False,
     )
 
     render_image.assert_called_once_with(
