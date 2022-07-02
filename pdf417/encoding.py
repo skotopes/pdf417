@@ -9,6 +9,7 @@ from pdf417.util import chunks, to_bytes
 
 START_CHARACTER = 0x1fea8
 STOP_CHARACTER = 0x3fa29
+TRUNCATED_STOP_CHARACTER = 0x80
 PADDING_CODE_WORD = 900
 
 # Maximum nubmer of code words which can be contained in a bar code, including
@@ -24,7 +25,7 @@ DEFAULT_ENCODING = 'utf-8'
 
 
 def encode(data, columns=6, security_level=2,
-           encoding=DEFAULT_ENCODING, numeric_compaction=True):
+           encoding=DEFAULT_ENCODING, numeric_compaction=True, truncate=False):
     if columns < 1 or columns > 30:
         raise ValueError(
             "'columns' must be between 1 and 30. Given: %r" % columns
@@ -50,29 +51,29 @@ def encode(data, columns=6, security_level=2,
 
     rows = list(chunks(code_words, num_cols))
 
-    return list(encode_rows(rows, num_cols, security_level))
+    return list(encode_rows(rows, num_cols, security_level, truncate))
 
 
-def encode_rows(rows, num_cols, security_level):
+def encode_rows(rows, num_cols, security_level, truncate):
     num_rows = len(rows)
 
     for row_no, row_data in enumerate(rows):
         left = get_left_code_word(row_no, num_rows, num_cols, security_level)
         right = get_right_code_word(row_no, num_rows, num_cols, security_level)
 
-        yield encode_row(row_no, row_data, left, right)
+        yield encode_row(row_no, row_data, left, right, truncate)
 
 
-def encode_row(row_no, row_words, left, right):
+def encode_row(row_no, row_words, left, right, truncate):
     table_idx = row_no % 3
 
     # Convert high level code words to low level code words
     left_low = map_code_word(table_idx, left)
     right_low = map_code_word(table_idx, right)
     row_words_low = [map_code_word(table_idx, word) for word in row_words]
+    stop_character = TRUNCATED_STOP_CHARACTER if truncate == True else STOP_CHARACTER
 
-    return [START_CHARACTER, left_low] + row_words_low + [right_low,
-                                                          STOP_CHARACTER]
+    return [START_CHARACTER, left_low] + row_words_low + [right_low, stop_character]
 
 
 def encode_high(data, columns, security_level, numeric_compaction=True):

@@ -18,6 +18,7 @@ def encode_data(args):
         security_level=args.security_level,
         encoding=args.encoding,
         numeric_compaction=args.numeric_compaction,
+        truncate=args.truncate
     )
 
     image = render_image(
@@ -70,6 +71,9 @@ subparser.add_argument("-r", "--ratio", dest="ratio", type=int, default=3,
 
 subparser.add_argument("-p", "--padding", default=20, type=int,
                        help="Image padding in pixels (default is 20).")
+
+subparser.add_argument("-t", "--truncate", action="store_true",
+                       help="Truncate stop pattern (default is False).")
 
 subparser.add_argument("-f", "--foreground-color", dest="fg_color", type=str,
                        help="Foreground color in hex (default is '#000000').",
